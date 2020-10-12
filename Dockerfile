@@ -26,6 +26,7 @@ RUN source $HOME/.cargo/env && \
         ln -s "/$MUSL_TARGET-cross/bin/$MUSL_TARGET-strip" "/usr/bin/actual-strip"; \
     else \
         echo "skipping toolchain as we are native" && \
+        apk add lld && \
         ln -s /usr/bin/strip /usr/bin/actual-strip; \
     fi
 

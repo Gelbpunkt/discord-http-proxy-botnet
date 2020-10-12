@@ -4,7 +4,9 @@
 of [twilight]. It is a heavily modified fork of their original project.
 
 It will behave as a normal ratelimited proxy, until you send the `X-Spam` header with any value.
-Then it will distribute outgoing requests across a list of tokens from its configuration, making use of a mix of availability caching, round robin and dark magic. **Warning**: Discord may or may not like this.
+Then it will distribute outgoing requests across a list of tokens from its configuration, making use of a mix of availability caching, round robin and dark magic(\*). **Warning**: Discord may or may not like this.
+
+\* Currently it is a very unintelligent round robin without retry availability caching, so make sure all your tokens can use any endpoint you request
 
 ### Using it
 

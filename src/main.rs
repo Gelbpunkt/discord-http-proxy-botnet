@@ -12,6 +12,7 @@ use std::{
     fs::read_to_string,
     net::{IpAddr, SocketAddr},
     str::FromStr,
+    sync::atomic::{AtomicUsize, Ordering},
 };
 use twilight_http::{client::Client, request::Request as TwilightRequest, routing::Path};
 
@@ -46,18 +47,25 @@ async fn main() -> std::io::Result<()> {
     info!("Using extra tokens {:?}", extra_tokens);
 
     let main_client = Client::new(main_token);
-    let extra_clients = extra_tokens.iter().map(Client::new).collect::<Vec<Client>>();
+    let mut extra_clients = extra_tokens
+        .iter()
+        .map(Client::new)
+        .collect::<Vec<Client>>();
+    extra_clients.push(main_client.clone());
 
     let address = SocketAddr::from((host, port));
 
     let client_data = Data::new(main_client);
     let extra_clients_data = Data::new(extra_clients);
 
+    let current_index = Data::new(AtomicUsize::new(0));
+
     HttpServer::new(move || {
         App::new()
             .wrap(Logger::default())
             .app_data(client_data.clone())
             .app_data(extra_clients_data.clone())
+            .app_data(current_index.clone())
             .default_service(route().to(handle_request))
     })
     .bind(address)?
@@ -71,6 +79,7 @@ async fn handle_request(
     bytes: Bytes,
     main_client: Data<Client>,
     extra_clients: Data<Vec<Client>>,
+    current_index: Data<AtomicUsize>,
 ) -> Result<HttpResponse, Error> {
     debug!("Incoming request: {:?}", request);
 
@@ -104,16 +113,17 @@ async fn handle_request(
     // Select a client to do the request with
     let client = match headers.get("X-Spam") {
         Some(_) => {
-            // Always fall back to main client in case of RL
-            let mut res = &**main_client;
-            for client in extra_clients.iter() {
-                if dbg!(client.time_until_available(&path).await).is_none() {
-                    res = client;
-                    break;
-                }
-            }
-            res
-        },
+            let old_idx = current_index
+                .fetch_update(Ordering::Relaxed, Ordering::Relaxed, |x| {
+                    if x + 1 == extra_clients.len() {
+                        Some(0)
+                    } else {
+                        Some(x + 1)
+                    }
+                })
+                .unwrap();
+            extra_clients.get(old_idx).unwrap()
+        }
         None => &**main_client,
     };
 

@@ -498,7 +498,6 @@ dependencies = [
  "env_logger",
  "http",
  "log",
- "reqwest",
  "twilight-http",
 ]
 
@@ -1840,7 +1839,7 @@ checksum = "59547bce71d9c38b83d9c0e92b6066c4253371f15005def0c30d9657f50c7642"
 [[package]]
 name = "twilight-http"
 version = "0.2.0-beta.0"
-source = "git+https://github.com/Gelbpunkt/twilight.git?branch=http-ratelimit-info#13c38ef38e3568f66e6fe3b9534066c82082d474"
+source = "git+https://github.com/Gelbpunkt/twilight.git?branch=http-ratelimit-info#c874d27266416773e079d7f3004c14909d538415"
 dependencies = [
  "bytes",
  "futures-channel",
@@ -1859,7 +1858,7 @@ dependencies = [
 [[package]]
 name = "twilight-model"
 version = "0.2.0-beta.0"
-source = "git+https://github.com/Gelbpunkt/twilight.git?branch=http-ratelimit-info#13c38ef38e3568f66e6fe3b9534066c82082d474"
+source = "git+https://github.com/Gelbpunkt/twilight.git?branch=http-ratelimit-info#c874d27266416773e079d7f3004c14909d538415"
 dependencies = [
  "bitflags",
  "serde",
