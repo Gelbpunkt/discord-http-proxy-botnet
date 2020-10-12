@@ -1,0 +1,13 @@
+[package]
+authors = ["Jens Reidel <adrian@travitia.xyz>"]
+edition = "2018"
+name = "discord-http-proxy-botnet"
+version = "0.1.0"
+
+[dependencies]
+actix-web = { version = "3", default-features = false }
+env_logger = "0.7"
+twilight-http = { git = "https://github.com/Gelbpunkt/twilight.git", branch = "http-ratelimit-info" }
+http = "0.2"
+log = "0.4"
+reqwest = { version = "0.10", default-features = false, features = ["rustls-tls"] }
